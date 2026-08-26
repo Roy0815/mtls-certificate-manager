@@ -1,0 +1,45 @@
+<%- include('partials/header', { title: 'Ersteinrichtung' }) %>
+<h1>Ersteinrichtung</h1>
+
+<% if (step === 1) { %>
+  <p>Schritt 1 von 2: Admin-Zugang anlegen.</p>
+  <% if (error) { %><div class="form-error"><%= error %></div><% } %>
+  <form method="POST" action="/setup/admin">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Benutzername
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label>Passwort
+      <input type="password" name="password" required minlength="12">
+    </label>
+    <label>Passwort bestätigen
+      <input type="password" name="confirmPassword" required minlength="12">
+    </label>
+    <p class="hint">
+      Dieses eine Passwort dient zwei Zwecken: Login-Prüfung und — per Argon2id
+      abgeleitet — Verschlüsselung von CA- und Zertifikatsschlüsseln. Es gibt
+      kein zweites Master-Passwort. Mindestens 12 Zeichen.
+    </p>
+    <button type="submit">Weiter</button>
+  </form>
+<% } else { %>
+  <p>Schritt 2 von 2: Certificate Authority erzeugen.</p>
+  <% if (error) { %><div class="form-error"><%= error %></div><% } %>
+  <form method="POST" action="/setup/ca">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Organisationsname (im CA-Zertifikat)
+      <input type="text" name="orgName" placeholder="mTLS Certificate Manager">
+    </label>
+    <label>Admin-Passwort (aus Schritt 1)
+      <input type="password" name="password" required autofocus>
+    </label>
+    <p class="hint">
+      Erzeugt einen RSA-4096-CA-Schlüssel. ca.crt wird unverschlüsselt abgelegt
+      (zur Verteilung, z. B. an Nginx Proxy Manager), ca.key wird mit dem aus
+      dem Passwort abgeleiteten Schlüssel AES-256-GCM-verschlüsselt gespeichert.
+      Die Schlüsselerzeugung kann einige Sekunden dauern.
+    </p>
+    <button type="submit">CA erzeugen</button>
+  </form>
+<% } %>
+<%- include('partials/footer') %>

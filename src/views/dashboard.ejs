@@ -1,0 +1,57 @@
+<%- include('partials/header', { title: 'Dashboard' }) %>
+<h1>Zertifikats-Nutzer</h1>
+
+<div class="actions-bar">
+  <a href="/crl/export" class="button">CRL exportieren</a>
+</div>
+
+<table class="user-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>E-Mail</th>
+      <th>Zertifikat-Status</th>
+      <th>Gültig bis</th>
+      <th>Aktionen</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(function(u) { %>
+      <tr>
+        <td><%= u.name %></td>
+        <td><%= u.email %></td>
+        <td>
+          <span class="badge badge-<%= u.displayStatus %>">
+            <%= u.displayStatus === 'active' ? 'aktiv' : (u.displayStatus === 'expired' ? 'abgelaufen' : 'kein Zertifikat') %>
+          </span>
+        </td>
+        <td><%= u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('de-DE') : '–' %></td>
+        <td class="row-actions">
+          <a href="/users/<%= u.id %>/issue">Neu ausstellen</a>
+          <% if (u.displayStatus === 'active') { %>
+            · <a href="/users/<%= u.id %>/share">Versenden</a>
+            · <a href="/users/<%= u.id %>/download">Herunterladen</a>
+            · <form method="POST" action="/users/<%= u.id %>/deactivate" class="inline-form"
+                    data-confirm="Zertifikat für <%= u.name %> wirklich deaktivieren?">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="link-button">Deaktivieren</button>
+              </form>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (users.length === 0) { %>
+      <tr><td colspan="5" class="empty-row">Noch keine Nutzer angelegt.</td></tr>
+    <% } %>
+  </tbody>
+</table>
+
+<h2>Neuen Nutzer anlegen</h2>
+<form method="POST" action="/users" class="inline-create-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <label>Name <input type="text" name="name" required></label>
+  <label>E-Mail <input type="email" name="email" required></label>
+  <button type="submit">Anlegen</button>
+</form>
+
+<%- include('partials/footer') %>

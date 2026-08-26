@@ -1,0 +1,32 @@
+<%- include('partials/header', { title: 'Zertifikat versendet' }) %>
+<h1>Zertifikat versendet</h1>
+<p>Das Zertifikat für <strong><%= user.name %></strong> wurde als .p12-Datei zu GoKapi hochgeladen.</p>
+
+<div class="result-box">
+  <div class="result-field">
+    <label>Download-Link (Einmal-Link)</label>
+    <div class="copy-row">
+      <input type="text" id="download-url" value="<%= downloadUrl %>" readonly>
+      <button type="button" data-copy-target="#download-url">Kopieren</button>
+    </div>
+  </div>
+  <div class="result-field">
+    <label>Export-Passwort für die .p12-Datei</label>
+    <div class="copy-row">
+      <input type="text" id="export-password" value="<%= exportPassword %>" readonly>
+      <button type="button" data-copy-target="#export-password">Kopieren</button>
+    </div>
+  </div>
+  <% if (typeof expireAtString !== 'undefined' && expireAtString) { %>
+    <p class="hint">Der Link läuft ab: <%= expireAtString %></p>
+  <% } %>
+  <p class="hint">
+    Link und Passwort bitte über getrennte Kanäle an den Empfänger übermitteln
+    (z. B. Link per E-Mail, Passwort per Telefon/Chat). Beides wird hier nur
+    einmalig angezeigt und nirgends gespeichert.
+  </p>
+</div>
+
+<p><a href="/">Zurück zum Dashboard</a></p>
+
+<%- include('partials/footer') %>
