@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Admin web app for issuing, revoking and distributing mTLS client certificates. YAML file storage, no DBMS.",
   "private": true,
+  "license": "MIT",
   "type": "commonjs",
   "main": "src/server.js",
   "scripts": {
