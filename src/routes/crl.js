@@ -14,12 +14,24 @@ const DESCRIPTION =
   'Erzeugt eine aktuelle Sperrliste (CRL) im PEM-Format, signiert mit dem CA-Schlüssel. ' +
   `Enthält alle widerrufenen, aber noch nicht regulär abgelaufenen Zertifikate. Gültig für ${env.CRL_VALIDITY_DAYS} Tage.`;
 
+// ca.crt is stored unencrypted on disk (see pkiStore.initializeCa) — it's the
+// public half of the CA, meant for distribution to whatever terminates mTLS
+// (e.g. Nginx Proxy Manager), so this is a plain download with no password
+// step, unlike every other export in this file.
+router.get('/ca/export', requireLogin, async (req, res) => {
+  const caCertPem = await pkiStore.loadCaCertPem();
+  res.setHeader('Content-Type', 'application/x-x509-ca-cert');
+  res.setHeader('Content-Disposition', 'attachment; filename="ca.crt"');
+  res.send(caCertPem);
+});
+
 router.get('/crl/export', requireLogin, async (req, res) => {
   res.render('confirm-password', {
     title: 'CRL exportieren',
     description: DESCRIPTION,
     action: '/crl/export',
     submitLabel: 'CRL exportieren',
+    icon: 'file-down',
     error: null,
   });
 });
@@ -32,6 +44,7 @@ router.post('/crl/export', requireLogin, verifyCsrf, async (req, res) => {
       description: DESCRIPTION,
       action: '/crl/export',
       submitLabel: 'CRL exportieren',
+      icon: 'file-down',
       error,
     });
 

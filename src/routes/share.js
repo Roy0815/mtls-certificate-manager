@@ -35,6 +35,7 @@ router.get('/users/:id/share', requireLogin, async (req, res) => {
     description: description(user),
     action: `/users/${user.id}/share`,
     submitLabel: 'Versenden',
+    icon: 'send',
     error: null,
   });
 });
@@ -50,6 +51,7 @@ router.post('/users/:id/share', requireLogin, verifyCsrf, async (req, res) => {
       description: description(user),
       action: `/users/${user.id}/share`,
       submitLabel: 'Versenden',
+      icon: 'send',
       error,
     });
 
@@ -96,6 +98,7 @@ router.get('/users/:id/download', requireLogin, async (req, res) => {
     description: downloadDescription(user),
     action: `/users/${user.id}/download`,
     submitLabel: 'Herunterladen',
+    icon: 'download',
     error: null,
   });
 });
@@ -111,6 +114,7 @@ router.post('/users/:id/download', requireLogin, verifyCsrf, async (req, res) =>
       description: downloadDescription(user),
       action: `/users/${user.id}/download`,
       submitLabel: 'Herunterladen',
+      icon: 'download',
       error,
     });
 

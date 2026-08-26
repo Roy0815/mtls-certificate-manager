@@ -9,11 +9,13 @@ const helmet = require('helmet');
 const env = require('./config/env');
 const configStore = require('./services/configStore');
 const { csrfToken } = require('./middleware/csrf');
+const icons = require('./config/icons');
 
 async function createApp() {
   const app = express();
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
+  app.locals.icons = icons;
   // Needed so express-session's cookie.secure:'auto' and rate-limiter IP
   // detection work correctly behind a reverse proxy (e.g. Nginx Proxy Manager)
   // terminating TLS.
@@ -24,7 +26,8 @@ async function createApp() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          styleSrc: ["'self'"],
+          styleSrc: ["'self'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com'],
           scriptSrc: ["'self'"],
           imgSrc: ["'self'", 'data:'],
         },

@@ -4,25 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> · mTLS Certificate Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <a href="/" class="brand">mTLS Certificate Manager</a>
+      <a href="/" class="brand">
+        <span class="brand-mark"><%- include('icon', { name: 'shield-check' }) %></span>
+        mTLS Certificate Manager
+      </a>
       <% if (typeof username !== 'undefined' && username) { %>
         <form method="POST" action="/logout" class="logout-form">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <span class="user-badge"><%= username %></span>
-          <button type="submit" class="link-button">Abmelden</button>
+          <span class="user-badge"><%- include('icon', { name: 'user-round' }) %><%= username %></span>
+          <button type="submit" class="link-button"><%- include('icon', { name: 'log-out' }) %>Abmelden</button>
         </form>
       <% } %>
     </div>
   </header>
   <main class="container">
     <% if (typeof successMessages !== 'undefined') { successMessages.forEach(function(msg) { %>
-      <div class="flash flash-success"><%= msg %></div>
+      <div class="flash flash-success"><%- include('icon', { name: 'check-circle-2' }) %><span><%= msg %></span><button type="button" class="flash-dismiss" aria-label="Schließen"><%- include('icon', { name: 'x' }) %></button></div>
     <% }) } %>
     <% if (typeof errorMessages !== 'undefined') { errorMessages.forEach(function(msg) { %>
-      <div class="flash flash-error"><%= msg %></div>
+      <div class="flash flash-error"><%- include('icon', { name: 'alert-circle' }) %><span><%= msg %></span><button type="button" class="flash-dismiss" aria-label="Schließen"><%- include('icon', { name: 'x' }) %></button></div>
     <% }) } %>

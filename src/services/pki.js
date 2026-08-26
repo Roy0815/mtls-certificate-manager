@@ -281,9 +281,14 @@ function buildCrl(caCertPem, caPrivateKeyPem, entries, crlNumber, validityDays) 
   return `-----BEGIN X509 CRL-----\n${lines}\n-----END X509 CRL-----\n`;
 }
 
+function getCertExpiry(certPem) {
+  return pki.certificateFromPem(certPem).validity.notAfter;
+}
+
 module.exports = {
   generateCA,
   issueCertificate,
   buildPkcs12,
   buildCrl,
+  getCertExpiry,
 };

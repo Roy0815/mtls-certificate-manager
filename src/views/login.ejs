@@ -1,14 +1,28 @@
 <%- include('partials/header', { title: 'Login' }) %>
-<h1>Login</h1>
-<% if (error) { %><div class="form-error"><%= error %></div><% } %>
-<form method="POST" action="/login">
-  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-  <label>Benutzername
-    <input type="text" name="username" required autofocus autocomplete="username">
-  </label>
-  <label>Passwort
-    <input type="password" name="password" required autocomplete="current-password">
-  </label>
-  <button type="submit">Anmelden</button>
-</form>
+
+<div class="security-step" style="margin: 2rem auto 0">
+  <div class="security-step-head">
+    <span class="icon-chip"><%- include('partials/icon', { name: 'shield-check' }) %></span>
+    <div>
+      <h1>Anmelden</h1>
+      <p>mTLS Certificate Manager – Admin-Zugang.</p>
+    </div>
+  </div>
+  <div class="security-step-body">
+    <% if (error) { %>
+      <div class="alert alert-error"><%- include('partials/icon', { name: 'lock-keyhole' }) %><span><%= error %></span></div>
+    <% } %>
+    <form method="POST" action="/login">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>Benutzername
+        <input type="text" name="username" required autofocus autocomplete="username">
+      </label>
+      <label>Passwort
+        <input type="password" name="password" required autocomplete="current-password">
+      </label>
+      <button type="submit" style="width:100%;justify-content:center"><%- include('partials/icon', { name: 'log-in' }) %>Anmelden</button>
+    </form>
+  </div>
+</div>
+
 <%- include('partials/footer') %>

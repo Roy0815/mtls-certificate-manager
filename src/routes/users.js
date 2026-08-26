@@ -30,6 +30,7 @@ router.get('/users/:id/issue', requireLogin, async (req, res) => {
     description: `Für ${user.name} (${user.email}) wird ein neues Zertifikat erzeugt. Ein eventuell vorhandenes aktuelles Zertifikat wird auf die Sperrliste gesetzt.`,
     action: `/users/${user.id}/issue`,
     submitLabel: 'Zertifikat ausstellen',
+    icon: 'file-badge',
     error: null,
   });
 });
@@ -45,6 +46,7 @@ router.post('/users/:id/issue', requireLogin, verifyCsrf, async (req, res) => {
       description: `Für ${user.name} (${user.email}) wird ein neues Zertifikat erzeugt.`,
       action: `/users/${user.id}/issue`,
       submitLabel: 'Zertifikat ausstellen',
+      icon: 'file-badge',
       error,
     });
 

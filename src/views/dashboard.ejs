@@ -1,57 +1,98 @@
 <%- include('partials/header', { title: 'Dashboard' }) %>
-<h1>Zertifikats-Nutzer</h1>
 
-<div class="actions-bar">
-  <a href="/crl/export" class="button">CRL exportieren</a>
+<div class="dashboard-head">
+  <div>
+    <h1>Zertifikats-Nutzer</h1>
+    <div class="dashboard-stats">
+      <%= users.length %> Nutzer · <%= activeCount %> aktive<%= activeCount === 1 ? 's' : '' %> Zertifikat<%= activeCount === 1 ? '' : 'e' %> · CA gültig bis <span class="mono"><%= caExpiresAt.toLocaleDateString('de-DE') %></span>
+    </div>
+  </div>
+  <div class="dashboard-head-actions">
+    <a href="/ca/export" class="button-secondary"><%- include('partials/icon', { name: 'landmark' }) %>CA-Zertifikat herunterladen</a>
+    <a href="/crl/export" class="button-secondary"><%- include('partials/icon', { name: 'file-down' }) %>CRL exportieren</a>
+  </div>
 </div>
 
-<table class="user-table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>E-Mail</th>
-      <th>Zertifikat-Status</th>
-      <th>Gültig bis</th>
-      <th>Aktionen</th>
-    </tr>
-  </thead>
-  <tbody>
+<% if (users.length === 0) { %>
+  <div class="empty-state">
+    <span class="icon-chip"><%- include('partials/icon', { name: 'user-round-plus' }) %></span>
+    <div class="empty-state-title">Noch keine Nutzer angelegt</div>
+    <div class="empty-state-text">Lege den ersten Nutzer an – Name und E-Mail genügen. Das Zertifikat stellst du danach mit einem Klick aus.</div>
+    <a href="#create-user-form" class="button"><%- include('partials/icon', { name: 'plus' }) %>Ersten Nutzer anlegen</a>
+  </div>
+<% } else { %>
+  <div class="user-table-wrap">
+    <div class="user-table-head">
+      <div>Nutzer</div><div class="col-status">Status</div><div>Gültigkeit</div><div class="col-actions">Aktionen</div>
+    </div>
     <% users.forEach(function(u) { %>
-      <tr>
-        <td><%= u.name %></td>
-        <td><%= u.email %></td>
-        <td>
-          <span class="badge badge-<%= u.displayStatus %>">
-            <%= u.displayStatus === 'active' ? 'aktiv' : (u.displayStatus === 'expired' ? 'abgelaufen' : 'kein Zertifikat') %>
-          </span>
-        </td>
-        <td><%= u.expiresAt ? new Date(u.expiresAt).toLocaleDateString('de-DE') : '–' %></td>
-        <td class="row-actions">
-          <a href="/users/<%= u.id %>/issue">Neu ausstellen</a>
-          <% if (u.displayStatus === 'active') { %>
-            · <a href="/users/<%= u.id %>/share">Versenden</a>
-            · <a href="/users/<%= u.id %>/download">Herunterladen</a>
-            · <form method="POST" action="/users/<%= u.id %>/deactivate" class="inline-form"
-                    data-confirm="Zertifikat für <%= u.name %> wirklich deaktivieren?">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button type="submit" class="link-button">Deaktivieren</button>
-              </form>
-          <% } %>
-        </td>
-      </tr>
-    <% }) %>
-    <% if (users.length === 0) { %>
-      <tr><td colspan="5" class="empty-row">Noch keine Nutzer angelegt.</td></tr>
-    <% } %>
-  </tbody>
-</table>
+      <div class="user-row">
+        <div>
+          <div class="user-name"><%= u.name %></div>
+          <div class="user-email"><%= u.email %></div>
+        </div>
 
-<h2>Neuen Nutzer anlegen</h2>
-<form method="POST" action="/users" class="inline-create-form">
+        <div class="col-status">
+          <% if (u.displayStatus === 'active' && !u.expiringSoon) { %>
+            <span class="badge badge-active"><%- include('partials/icon', { name: 'shield-check' }) %>aktiv</span>
+          <% } else if (u.displayStatus === 'active' && u.expiringSoon) { %>
+            <span class="badge badge-expiring"><%- include('partials/icon', { name: 'clock-alert' }) %>läuft ab</span>
+          <% } else if (u.displayStatus === 'expired') { %>
+            <span class="badge badge-expired"><%- include('partials/icon', { name: 'shield-x' }) %>abgelaufen</span>
+          <% } else { %>
+            <span class="badge badge-none"><%- include('partials/icon', { name: 'shield-off' }) %>kein Zertifikat</span>
+          <% } %>
+        </div>
+
+        <div class="col-validity">
+          <% if (u.displayStatus === 'active') { %>
+            <div class="validity-date"><%= new Date(u.expiresAt).toLocaleDateString('de-DE') %></div>
+            <div class="validity-bar"><div class="validity-bar-fill<%= u.expiringSoon ? ' is-expiring' : '' %>" style="width:<%= u.percentRemaining %>%"></div></div>
+            <div class="validity-remaining<%= u.expiringSoon ? ' is-expiring' : '' %>">
+              <%= u.expiringSoon ? `läuft in ${u.daysRemaining} Tagen ab` : `noch ${u.daysRemaining} Tage` %>
+            </div>
+          <% } else if (u.displayStatus === 'expired') { %>
+            <div class="validity-date"><%= new Date(u.expiresAt).toLocaleDateString('de-DE') %></div>
+            <div class="validity-none">abgelaufen</div>
+          <% } else { %>
+            <span class="validity-none">–</span>
+          <% } %>
+        </div>
+
+        <div class="col-actions">
+          <% if (u.displayStatus === 'none') { %>
+            <a href="/users/<%= u.id %>/issue" class="button-secondary"><%- include('partials/icon', { name: 'file-badge' }) %>Erstes Zertifikat ausstellen</a>
+          <% } else if (u.displayStatus === 'expired') { %>
+            <a href="/users/<%= u.id %>/issue" class="button-secondary"><%- include('partials/icon', { name: 'refresh-cw' }) %>Neu ausstellen</a>
+          <% } else if (u.expiringSoon) { %>
+            <a href="/users/<%= u.id %>/issue" class="button"><%- include('partials/icon', { name: 'refresh-cw' }) %>Erneuern</a>
+            <a href="/users/<%= u.id %>/share" class="icon-button" title="Versenden"><%- include('partials/icon', { name: 'send' }) %></a>
+            <a href="/users/<%= u.id %>/download" class="icon-button" title="Herunterladen"><%- include('partials/icon', { name: 'download' }) %></a>
+            <form method="POST" action="/users/<%= u.id %>/deactivate" class="inline-form" data-confirm="Zertifikat für <%= u.name %> wirklich deaktivieren?">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="icon-button icon-button-danger" title="Deaktivieren"><%- include('partials/icon', { name: 'ban' }) %></button>
+            </form>
+          <% } else { %>
+            <a href="/users/<%= u.id %>/issue" class="icon-button" title="Neu ausstellen"><%- include('partials/icon', { name: 'refresh-cw' }) %></a>
+            <a href="/users/<%= u.id %>/share" class="icon-button" title="Versenden"><%- include('partials/icon', { name: 'send' }) %></a>
+            <a href="/users/<%= u.id %>/download" class="icon-button" title="Herunterladen"><%- include('partials/icon', { name: 'download' }) %></a>
+            <form method="POST" action="/users/<%= u.id %>/deactivate" class="inline-form" data-confirm="Zertifikat für <%= u.name %> wirklich deaktivieren?">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="icon-button icon-button-danger" title="Deaktivieren"><%- include('partials/icon', { name: 'ban' }) %></button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<form method="POST" action="/users" class="create-user-form" id="create-user-form">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-  <label>Name <input type="text" name="name" required></label>
-  <label>E-Mail <input type="email" name="email" required></label>
-  <button type="submit">Anlegen</button>
+  <div class="create-user-heading"><%- include('partials/icon', { name: 'user-round-plus' }) %>Neuen Nutzer anlegen</div>
+  <label>Name <input type="text" name="name" placeholder="Vor- und Nachname" required></label>
+  <label>E-Mail <input type="email" name="email" placeholder="name@example.com" required></label>
+  <button type="submit"><%- include('partials/icon', { name: 'plus' }) %>Anlegen</button>
 </form>
 
 <%- include('partials/footer') %>

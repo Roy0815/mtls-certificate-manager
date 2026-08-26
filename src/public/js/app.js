@@ -4,12 +4,21 @@ document.addEventListener('click', function (e) {
   var input = document.querySelector(btn.getAttribute('data-copy-target'));
   if (!input) return;
   navigator.clipboard.writeText(input.value).then(function () {
-    var original = btn.textContent;
-    btn.textContent = 'Kopiert!';
+    var originalTitle = btn.getAttribute('title');
+    btn.classList.add('is-copied');
+    btn.setAttribute('title', 'Kopiert!');
     setTimeout(function () {
-      btn.textContent = original;
+      btn.classList.remove('is-copied');
+      btn.setAttribute('title', originalTitle);
     }, 1500);
   });
+});
+
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('.flash-dismiss');
+  if (!btn) return;
+  var flash = btn.closest('.flash');
+  if (flash) flash.remove();
 });
 
 // CSP (script-src 'self') blocks inline onsubmit="..." handlers, so

@@ -1,22 +1,31 @@
 <%- include('partials/header', { title: 'Zertifikat heruntergeladen' }) %>
-<h1>Zertifikat zum Download bereit</h1>
-<p>Die .p12-Datei für <strong><%= user.name %></strong> wurde erstellt.</p>
 
-<div class="result-box">
-  <div class="result-field">
-    <label>Export-Passwort für die .p12-Datei</label>
-    <div class="copy-row">
-      <input type="text" id="export-password" value="<%= exportPassword %>" readonly>
-      <button type="button" data-copy-target="#export-password">Kopieren</button>
+<div class="result-layout">
+  <div class="result-box" style="max-width:520px">
+    <div class="result-box-flag"><%- include('partials/icon', { name: 'eye-off' }) %>Wird nur einmal angezeigt – jetzt sichern</div>
+    <div class="result-box-body">
+      <h1><%- include('partials/icon', { name: 'check-circle-2' }) %>Zertifikat zum Download bereit</h1>
+      <p>Die .p12-Datei für <strong><%= user.name %></strong> wurde erstellt.</p>
+
+      <div class="result-field">
+        <div class="result-field-label"><%- include('partials/icon', { name: 'key-round' }) %>Export-Passwort für die .p12-Datei</div>
+        <div class="copy-row">
+          <input type="text" id="export-password" class="secret-value" value="<%= exportPassword %>" readonly>
+          <button type="button" class="icon-button copy-primary" data-copy-target="#export-password" title="Kopieren"><%- include('partials/icon', { name: 'copy' }) %></button>
+        </div>
+      </div>
+
+      <div class="expiry-note"><%- include('partials/icon', { name: 'timer' }) %>Der Download-Link ist einmalig gültig und läuft nach kurzer Zeit ab.</div>
+
+      <div class="result-footer" style="margin-bottom:1rem">
+        <a href="<%= downloadPath %>" class="button"><%- include('partials/icon', { name: 'file-down' }) %>Datei herunterladen</a>
+      </div>
+      <div class="result-footer">
+        <a href="/" class="button-secondary"><%- include('partials/icon', { name: 'arrow-left' }) %>Zurück zum Dashboard</a>
+        <span class="result-footer-note">Datei und Passwort bitte über getrennte Kanäle übermitteln.</span>
+      </div>
     </div>
   </div>
-  <p class="hint">
-    Datei und Passwort bitte über getrennte Kanäle an den Empfänger übermitteln.
-    Der Download-Link ist nur einmalig gültig und läuft nach kurzer Zeit ab.
-  </p>
-  <a href="<%= downloadPath %>" class="button">Datei herunterladen</a>
 </div>
-
-<p><a href="/">Zurück zum Dashboard</a></p>
 
 <%- include('partials/footer') %>

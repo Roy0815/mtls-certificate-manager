@@ -1,32 +1,49 @@
 <%- include('partials/header', { title: 'Zertifikat versendet' }) %>
-<h1>Zertifikat versendet</h1>
-<p>Das Zertifikat für <strong><%= user.name %></strong> wurde als .p12-Datei zu GoKapi hochgeladen.</p>
 
-<div class="result-box">
-  <div class="result-field">
-    <label>Download-Link (Einmal-Link)</label>
-    <div class="copy-row">
-      <input type="text" id="download-url" value="<%= downloadUrl %>" readonly>
-      <button type="button" data-copy-target="#download-url">Kopieren</button>
+<div class="result-layout">
+  <div class="result-box">
+    <div class="result-box-flag"><%- include('partials/icon', { name: 'eye-off' }) %>Wird nur einmal angezeigt – jetzt sichern</div>
+    <div class="result-box-body">
+      <h1><%- include('partials/icon', { name: 'check-circle-2' }) %>Zertifikat versendet</h1>
+      <p>Die .p12-Datei für <strong><%= user.name %></strong> liegt als Einmal-Download bei GoKapi.</p>
+
+      <div class="result-field">
+        <div class="result-field-label"><%- include('partials/icon', { name: 'link' }) %>Download-Link (Einmal-Link)</div>
+        <div class="copy-row">
+          <input type="text" id="download-url" value="<%= downloadUrl %>" readonly>
+          <button type="button" class="icon-button copy-primary" data-copy-target="#download-url" title="Kopieren"><%- include('partials/icon', { name: 'copy' }) %></button>
+        </div>
+      </div>
+
+      <div class="result-field">
+        <div class="result-field-label"><%- include('partials/icon', { name: 'key-round' }) %>Export-Passwort für die .p12-Datei</div>
+        <div class="copy-row">
+          <input type="text" id="export-password" class="secret-value" value="<%= exportPassword %>" readonly>
+          <button type="button" class="icon-button copy-primary" data-copy-target="#export-password" title="Kopieren"><%- include('partials/icon', { name: 'copy' }) %></button>
+        </div>
+      </div>
+
+      <% if (typeof expireAtString !== 'undefined' && expireAtString) { %>
+        <div class="expiry-note"><%- include('partials/icon', { name: 'timer' }) %>Link läuft ab am <span class="mono"><%= expireAtString %></span></div>
+      <% } %>
+
+      <div class="result-footer">
+        <a href="/" class="button-secondary"><%- include('partials/icon', { name: 'arrow-left' }) %>Zurück zum Dashboard</a>
+        <span class="result-footer-note">Werte sind danach nicht mehr abrufbar.</span>
+      </div>
     </div>
   </div>
-  <div class="result-field">
-    <label>Export-Passwort für die .p12-Datei</label>
-    <div class="copy-row">
-      <input type="text" id="export-password" value="<%= exportPassword %>" readonly>
-      <button type="button" data-copy-target="#export-password">Kopieren</button>
+
+  <div class="result-sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-card-title"><%- include('partials/icon', { name: 'split' }) %>Getrennte Kanäle</div>
+      <div class="sidebar-list">
+        <div class="sidebar-list-item"><%- include('partials/icon', { name: 'mail' }) %><span>Link per E-Mail schicken</span></div>
+        <div class="sidebar-list-item"><%- include('partials/icon', { name: 'phone' }) %><span>Passwort per Telefon oder Chat durchgeben</span></div>
+        <div class="sidebar-list-item"><%- include('partials/icon', { name: 'database-zap' }) %><span>Nichts davon wird serverseitig gespeichert.</span></div>
+      </div>
     </div>
   </div>
-  <% if (typeof expireAtString !== 'undefined' && expireAtString) { %>
-    <p class="hint">Der Link läuft ab: <%= expireAtString %></p>
-  <% } %>
-  <p class="hint">
-    Link und Passwort bitte über getrennte Kanäle an den Empfänger übermitteln
-    (z. B. Link per E-Mail, Passwort per Telefon/Chat). Beides wird hier nur
-    einmalig angezeigt und nirgends gespeichert.
-  </p>
 </div>
-
-<p><a href="/">Zurück zum Dashboard</a></p>
 
 <%- include('partials/footer') %>
