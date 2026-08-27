@@ -8,12 +8,12 @@ services:
     #  - "3000:3000"
     environment:
       # --- runtime ---
-      - PORT=${PORT:3000}
+      - PORT=${PORT:-3000}
       - PUID=${PUID}
       - PGID=${PGID}
 
       # --- certificate settings ---
-      - CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:365}
+      - CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:-365}
 
       # --- GoKapi integration (used by the "send via one-time link" action) ---
       - GOKAPI_API_URL=${GOKAPI_API_URL}
