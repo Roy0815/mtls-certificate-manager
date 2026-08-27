@@ -4,20 +4,20 @@ services:
     # image: ghcr.io/yourorg/mtls-certificate-manager:latest
     container_name: mtls-certificate-manager
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+    #ports:
+    #  - "3000:3000"
     environment:
       # --- runtime ---
-      PORT: "3000"
-      PUID: "1001"
-      PGID: "1001"
+      - PORT=${PORT:3000}
+      - PUID=${PUID}
+      - PGID=${PGID}
 
       # --- certificate settings ---
-      CERT_VALIDITY_DAYS: "365"
+      - CERT_VALIDITY_DAYS=${CERT_VALIDITY_DAYS:365}
 
       # --- GoKapi integration (used by the "send via one-time link" action) ---
-      GOKAPI_API_URL: "https://files.example.com"
-      GOKAPI_API_KEY: "${GOKAPI_API_KEY:?set GOKAPI_API_KEY in .env or the shell environment, never hardcode it here}"
+      - GOKAPI_API_URL=${GOKAPI_API_URL}
+      - GOKAPI_API_KEY=${GOKAPI_API_KEY}
     volumes:
       - ./data:/app/data
       - ./pki:/app/pki
