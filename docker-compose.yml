@@ -21,3 +21,9 @@ services:
     volumes:
       - ./data:/app/data
       - ./pki:/app/pki
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
